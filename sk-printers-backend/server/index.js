@@ -4,30 +4,39 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load environment variables
-dotenv.config({ path: '.env.local' });
+// 1. Correct environment variable loading for Railway/Production
+// Standard config() looks for system environment variables first
+// Load .env.local for local development
+dotenv.config({ path: require('path').join(__dirname, '../.env.local') });
 
 const app = express();
 
-// Middleware
+// 2. Updated CORS configuration for your live Vercel domain
 app.use(cors({
   origin: [
+    "https://neww-y4k9.vercel.app",
     "https://sk-printer.vercel.app",
-    "https://sk-printer-rlmfle325-nruhp25-4856s-projects.vercel.app",
     "http://localhost:3000",
-    /\.vercel\.app$/  // Allow ALL Vercel deployments
+    /\.vercel\.app$/  // Allows all Vercel preview deployments
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI)
+// 3. Database connection with safety check
+if (!process.env.MONGODB_URI) {
+  console.error('❌ Error: MONGODB_URI is not defined in environment variables');
+}
 
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB Connected Successfully'))
   .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 

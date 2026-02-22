@@ -10,9 +10,9 @@ const upload = require('../middleware/upload');
 router.get('/', async (req, res) => {
   try {
     const { category, type, featured, active = 'true' } = req.query;
-    
+
     let query = {};
-    
+
     if (category) query.category = category;
     if (type) query.type = type;
     if (featured) query.isFeatured = featured === 'true';
@@ -64,8 +64,23 @@ router.get('/:slug', async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async (req, res) => {
   try {
-    const productData = req.body;
-    
+    const body = req.body;
+
+    // Map the simplified admin form fields to the Product schema structure
+    const productData = {
+      name: body.name,
+      description: body.description,
+      category: body.category || '3-ply',
+      // Admin form uses `type` or falls back to 'corrugated'
+      type: body.type || 'corrugated',
+      pricing: {
+        basePrice: parseFloat(body.price || body['pricing.basePrice'] || body.basePrice || 0),
+        minQuantity: parseInt(body.minOrder || body['pricing.minQuantity'] || body.minQuantity || 100),
+      },
+      isActive: body.stock !== 'out-of-stock',
+      isFeatured: body.isFeatured === 'true' || body.isFeatured === true,
+    };
+
     // Handle uploaded images
     if (req.files && req.files.length > 0) {
       productData.images = req.files.map((file, index) => ({
@@ -82,6 +97,7 @@ router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async 
       data: product,
     });
   } catch (error) {
+    console.error('Error saving product:', error.message);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -94,9 +110,32 @@ router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async 
 // @access  Private/Admin
 router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
   try {
+    const body = req.body;
+
+    // Map admin form fields to schema structure for updates too
+    const updateData = { ...body };
+
+    if (body.price !== undefined) {
+      updateData.pricing = {
+        basePrice: parseFloat(body.price),
+        minQuantity: parseInt(body.minOrder || 100),
+      };
+      delete updateData.price;
+      delete updateData.minOrder;
+    }
+
+    if (body.stock !== undefined) {
+      updateData.isActive = body.stock !== 'out-of-stock';
+      delete updateData.stock;
+    }
+
+    if (!updateData.type) {
+      updateData.type = 'corrugated';
+    }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     );
 

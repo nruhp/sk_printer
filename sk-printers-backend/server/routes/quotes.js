@@ -16,15 +16,37 @@ router.post('/', async (req, res) => {
     if (!name || !email || !phone || !boxType || !quantity) {
       return res.status(400).json({
         success: false,
-        message: 'Please fill all required fields',
+        message: 'Please fill all required fields (name, email, phone, boxType, quantity)',
       });
     }
 
-    // Save to database
+    // Validate boxType matches the schema enum
+    const validBoxTypes = ['3-ply', '5-ply', '7-ply', 'custom'];
+    const normalizedBoxType = validBoxTypes.includes(boxType) ? boxType : 'custom';
+
+    // Map flat form fields to the nested Quote schema structure
     const quote = await Quote.create({
-      name, email, phone, company,
-      boxType, quantity, length, width, height,
-      printing, printColors, specialRequirements,
+      customerInfo: {
+        name,
+        email,
+        phone,
+        company: company || '',
+      },
+      boxRequirements: {
+        type: normalizedBoxType,
+        quantity: parseInt(quantity) || 0,
+        printingRequired: printing === true || printing === 'true' || printing === 'yes',
+        dimensions: {
+          length: length ? parseFloat(length) : undefined,
+          width: width ? parseFloat(width) : undefined,
+          height: height ? parseFloat(height) : undefined,
+          unit: 'cm',
+        },
+        colors: printColors || '',
+      },
+      additionalDetails: {
+        specialRequirements: specialRequirements || '',
+      },
       status: 'pending',
     });
 
@@ -51,6 +73,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to submit quote request. Please try again.',
+      error: error.message,
     });
   }
 });
@@ -59,7 +82,25 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const quotes = await Quote.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: quotes });
+
+    // Flatten the nested structure for the admin panel to consume easily
+    const flatQuotes = quotes.map(q => ({
+      _id: q._id,
+      name: q.customerInfo?.name,
+      email: q.customerInfo?.email,
+      phone: q.customerInfo?.phone,
+      company: q.customerInfo?.company,
+      boxType: q.boxRequirements?.type,
+      quantity: q.boxRequirements?.quantity,
+      printing: q.boxRequirements?.printingRequired,
+      printColors: q.boxRequirements?.colors,
+      dimensions: q.boxRequirements?.dimensions,
+      specialRequirements: q.additionalDetails?.specialRequirements,
+      status: q.status,
+      createdAt: q.createdAt,
+    }));
+
+    res.json({ success: true, data: flatQuotes });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

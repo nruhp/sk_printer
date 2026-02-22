@@ -5,25 +5,26 @@ const { protect, restrictTo } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // @route   GET /api/blogs
-// @desc    Get all blogs (published only for public)
+// @desc    Get all published blogs (public) or all blogs (admin with ?all=true)
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { category, tag, featured, search, page = 1, limit = 10 } = req.query;
-    
-    let query = { isPublished: true };
-    
+    const { category, tag, featured, search, page = 1, limit = 10, all } = req.query;
+
+    // If ?all=true is passed (admin panel), return all blogs regardless of publish status
+    let query = all === 'true' ? {} : { isPublished: true };
+
     if (category) query.category = category;
     if (tag) query.tags = tag;
     if (featured) query.isFeatured = featured === 'true';
-    
+
     // Search functionality
     if (search) {
       query.$text = { $search: search };
     }
 
     const blogs = await Blog.find(query)
-      .sort({ publishedAt: -1 })
+      .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .select('-content'); // Exclude full content in list view
@@ -45,43 +46,13 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/blogs/:slug
-// @desc    Get single blog by slug
-// @access  Public
-router.get('/:slug', async (req, res) => {
-  try {
-    const blog = await Blog.findOne({ slug: req.params.slug, isPublished: true });
-
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog post not found',
-      });
-    }
-
-    // Increment views
-    blog.views += 1;
-    await blog.save();
-
-    res.json({
-      success: true,
-      data: blog,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
 // @route   GET /api/blogs/related/:slug
-// @desc    Get related blogs
+// @desc    Get related blogs (MUST be before /:slug to avoid conflict)
 // @access  Public
 router.get('/related/:slug', async (req, res) => {
   try {
     const currentBlog = await Blog.findOne({ slug: req.params.slug });
-    
+
     if (!currentBlog) {
       return res.status(404).json({
         success: false,
@@ -113,13 +84,54 @@ router.get('/related/:slug', async (req, res) => {
   }
 });
 
+// @route   GET /api/blogs/:slug
+// @desc    Get single blog by slug
+// @access  Public
+router.get('/:slug', async (req, res) => {
+  try {
+    const blog = await Blog.findOne({ slug: req.params.slug });
+
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: 'Blog post not found',
+      });
+    }
+
+    // Increment views using findByIdAndUpdate to avoid triggering pre-save hooks
+    await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
+
+    res.json({
+      success: true,
+      data: blog,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // @route   POST /api/blogs
 // @desc    Create new blog
 // @access  Private/Admin
 router.post('/', protect, restrictTo('admin'), upload.single('featuredImage'), async (req, res) => {
   try {
-    const blogData = req.body;
-    
+    const body = req.body;
+
+    // Map admin form `status` field to `isPublished` boolean
+    const blogData = {
+      title: body.title,
+      content: body.content,
+      excerpt: body.excerpt,
+      category: body.category,
+      tags: Array.isArray(body.tags) ? body.tags : (body.tags ? body.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+      isPublished: body.status === 'published' || body.isPublished === true || body.isPublished === 'true',
+      isFeatured: body.isFeatured === true || body.isFeatured === 'true',
+      readTime: body.readTime ? parseInt(body.readTime) : undefined,
+    };
+
     // Handle uploaded featured image
     if (req.file) {
       blogData.featuredImage = {
@@ -135,6 +147,7 @@ router.post('/', protect, restrictTo('admin'), upload.single('featuredImage'), a
       data: blog,
     });
   } catch (error) {
+    console.error('Error saving blog:', error.message);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -147,9 +160,24 @@ router.post('/', protect, restrictTo('admin'), upload.single('featuredImage'), a
 // @access  Private/Admin
 router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
   try {
+    const body = req.body;
+
+    const updateData = { ...body };
+
+    // Map `status` field to `isPublished`
+    if (body.status !== undefined) {
+      updateData.isPublished = body.status === 'published';
+      delete updateData.status;
+    }
+
+    // Parse tags if they come as a comma-separated string
+    if (typeof updateData.tags === 'string') {
+      updateData.tags = updateData.tags.split(',').map(t => t.trim()).filter(Boolean);
+    }
+
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     );
 
