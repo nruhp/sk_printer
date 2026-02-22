@@ -25,7 +25,8 @@ export default function AdminBlogs() {
   const fetchBlogs = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/blogs`, {
+      // Pass ?all=true so admin sees ALL blogs including drafts
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/blogs?all=true`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBlogs(res.data.data || []);
@@ -77,7 +78,9 @@ export default function AdminBlogs() {
     setForm({
       title: blog.title, content: blog.content, excerpt: blog.excerpt,
       category: blog.category, tags: blog.tags?.join(', ') || '',
-      status: blog.status, readTime: blog.readTime
+      // Map isPublished boolean back to status string for the form
+      status: blog.isPublished ? 'published' : 'draft',
+      readTime: blog.readTime
     });
     setShowModal(true);
   };
@@ -143,7 +146,7 @@ export default function AdminBlogs() {
                       <tr key={blog._id} className="border-t hover:bg-gray-50">
                         <td className="p-4 font-semibold max-w-xs truncate">{blog.title}</td>
                         <td className="p-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{blog.category}</span></td>
-                        <td className="p-4"><span className={`px-2 py-1 rounded text-sm ${blog.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{blog.status}</span></td>
+                        <td className="p-4"><span className={`px-2 py-1 rounded text-sm ${blog.isPublished ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{blog.isPublished ? 'Published' : 'Draft'}</span></td>
                         <td className="p-4">{blog.readTime} min</td>
                         <td className="p-4">
                           <button onClick={() => handleEdit(blog)} className="text-blue-600 hover:text-blue-700 mr-4"><FaEdit /></button>
@@ -166,23 +169,23 @@ export default function AdminBlogs() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-1">Title</label>
-                <input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required
+                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Excerpt (Short Description)</label>
-                <textarea value={form.excerpt} onChange={e => setForm({...form, excerpt: e.target.value})} rows="2" required
+                <textarea value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} rows="2" required
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Content</label>
-                <textarea value={form.content} onChange={e => setForm({...form, content: e.target.value})} rows="6" required
+                <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows="6" required
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Category</label>
-                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})}
+                  <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none">
                     <option value="packaging-tips">Packaging Tips</option>
                     <option value="industry-news">Industry News</option>
@@ -193,7 +196,7 @@ export default function AdminBlogs() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Status</label>
-                  <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}
+                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none">
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
@@ -203,12 +206,12 @@ export default function AdminBlogs() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Tags (comma separated)</label>
-                  <input type="text" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} placeholder="packaging, boxes, tips"
+                  <input type="text" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} placeholder="packaging, boxes, tips"
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Read Time (minutes)</label>
-                  <input type="number" value={form.readTime} onChange={e => setForm({...form, readTime: e.target.value})}
+                  <input type="number" value={form.readTime} onChange={e => setForm({ ...form, readTime: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
                 </div>
               </div>
