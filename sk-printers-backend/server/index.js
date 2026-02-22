@@ -11,9 +11,15 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ["https://sk-printer.vercel.app", "http://localhost:3000"],
+  origin: [
+    "https://sk-printer.vercel.app",
+    "https://sk-printer-rlmfle325-nruhp25-4856s-projects.vercel.app",
+    "http://localhost:3000",
+    /\.vercel\.app$/  // Allow ALL Vercel deployments
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
