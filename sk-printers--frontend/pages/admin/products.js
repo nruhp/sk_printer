@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -171,18 +170,18 @@ export default function AdminProducts() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-1">Product Name</label>
-                <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required
+                <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Description</label>
-                <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows="3" required
+                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows="3" required
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Category</label>
-                  <select value={form.category} onChange={e => setForm({...form, category: e.target.value})}
+                  <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none">
                     <option value="3-ply">3-Ply</option>
                     <option value="5-ply">5-Ply</option>
@@ -192,7 +191,7 @@ export default function AdminProducts() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Stock Status</label>
-                  <select value={form.stock} onChange={e => setForm({...form, stock: e.target.value})}
+                  <select value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none">
                     <option value="available">Available</option>
                     <option value="out-of-stock">Out of Stock</option>
@@ -202,12 +201,12 @@ export default function AdminProducts() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Price (₹)</label>
-                  <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} required
+                  <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Min Order (units)</label>
-                  <input type="number" value={form.minOrder} onChange={e => setForm({...form, minOrder: e.target.value})} required
+                  <input type="number" value={form.minOrder} onChange={e => setForm({ ...form, minOrder: e.target.value })} required
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-primary-500 focus:outline-none" />
                 </div>
               </div>
