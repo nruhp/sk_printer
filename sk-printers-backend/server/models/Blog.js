@@ -76,7 +76,7 @@ const blogSchema = new mongoose.Schema({
 });
 
 // Generate slug and calculate read time before saving
-blogSchema.pre('save', function (next) {
+blogSchema.pre('save', async function () {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
@@ -92,8 +92,6 @@ blogSchema.pre('save', function (next) {
   if (this.isPublished && !this.publishedAt) {
     this.publishedAt = Date.now();
   }
-
-  next();
 });
 
 // Index for search

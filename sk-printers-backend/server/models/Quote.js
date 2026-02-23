@@ -76,9 +76,8 @@ const quoteSchema = new mongoose.Schema({
   },
 });
 
-quoteSchema.pre('save', function(next) {
+quoteSchema.pre('save', async function () {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Quote', quoteSchema);
