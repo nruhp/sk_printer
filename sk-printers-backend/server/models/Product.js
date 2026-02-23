@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -90,12 +91,11 @@ const productSchema = new mongoose.Schema({
 });
 
 // Generate slug before saving
-productSchema.pre('save', function(next) {
+productSchema.pre('save', async function () {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Product', productSchema);
