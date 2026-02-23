@@ -4,10 +4,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// 1. Correct environment variable loading for Railway/Production
-// Standard config() looks for system environment variables first
-// Load .env.local for local development
+// Load environment variables
+// Tries .env.local first (local dev), then falls back to system env vars (production)
 dotenv.config({ path: require('path').join(__dirname, '../.env.local') });
+dotenv.config(); // also load .env if present
 
 const app = express();
 
