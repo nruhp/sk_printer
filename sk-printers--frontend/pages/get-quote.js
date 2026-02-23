@@ -86,6 +86,33 @@ export default function GetQuote() {
       setLoading(false);
     }
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      setMessage('Message sent successfully! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
+    } else {
+      setMessage(data.message || 'Failed to send message. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    setMessage('Failed to send message. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Layout>
