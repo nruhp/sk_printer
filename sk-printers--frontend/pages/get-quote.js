@@ -4,16 +4,13 @@ import Layout from '../components/layout/Layout';
 import { FaBox, FaRuler, FaPalette, FaEnvelope, FaPhone, FaUser, FaBuilding } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 
 export default function GetQuote() {
   const [formData, setFormData] = useState({
-    // Customer Info
     name: '',
     email: '',
     phone: '',
     company: '',
-    // Box Requirements
     boxType: '3-ply',
     length: '',
     width: '',
@@ -21,7 +18,6 @@ export default function GetQuote() {
     quantity: '',
     printingRequired: 'no',
     colors: '1',
-    // Additional Details
     useCase: '',
     specialRequirements: '',
   });
@@ -65,54 +61,35 @@ export default function GetQuote() {
         },
       };
 
-      const response = await axios.post(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/quotes`,
-        quoteData
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(quoteData),
+        }
       );
 
-      if (response.data.success) {
-        toast.success('Quote request submitted successfully! We\'ll contact you within 24 hours.');
-        // Reset form
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Quote request submitted successfully! We will contact you within 24 hours.');
         setFormData({
           name: '', email: '', phone: '', company: '',
           boxType: '3-ply', length: '', width: '', height: '',
           quantity: '', printingRequired: 'no', colors: '1',
           useCase: '', specialRequirements: '',
         });
+      } else {
+        toast.error(data.message || 'Failed to submit request. Please try again.');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit request. Please try again.');
+      console.error('Error:', error);
+      toast.error('Failed to submit request. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage('');
-
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    
-    if (res.ok) {
-      setMessage('Message sent successfully! We\'ll get back to you soon.');
-      setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
-    } else {
-      setMessage(data.message || 'Failed to send message. Please try again.');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    setMessage('Failed to send message. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <Layout>
@@ -121,19 +98,16 @@ const handleSubmit = async (e) => {
         <meta name="description" content="Request a custom quote for corrugated boxes. Fast response within 24 hours. Free samples available." />
       </Head>
 
-      {/* Hero */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-black mb-4">Get Custom Quote</h1>
-          <p className="text-xl">Fill out the form below and we'll get back to you within 24 hours</p>
+          <p className="text-xl">Fill out the form below and we will get back to you within 24 hours</p>
         </div>
       </section>
 
-      {/* Form Section */}
       <section className="section-padding">
         <div className="container-custom max-w-4xl">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Customer Information */}
             <div className="card">
               <h2 className="text-2xl font-bold mb-6 flex items-center">
                 <FaUser className="mr-3 text-primary-600" />
@@ -190,7 +164,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Box Requirements */}
             <div className="card">
               <h2 className="text-2xl font-bold mb-6 flex items-center">
                 <FaBox className="mr-3 text-primary-600" />
@@ -198,7 +171,6 @@ const handleSubmit = async (e) => {
               </h2>
               
               <div className="space-y-6">
-                {/* Box Type */}
                 <div>
                   <label className="label">Box Type *</label>
                   <select
@@ -214,7 +186,6 @@ const handleSubmit = async (e) => {
                   </select>
                 </div>
 
-                {/* Dimensions */}
                 <div>
                   <label className="label">
                     <FaRuler className="inline mr-2" />
@@ -263,7 +234,6 @@ const handleSubmit = async (e) => {
                   </div>
                 </div>
 
-                {/* Quantity */}
                 <div>
                   <label className="label">Quantity (units) *</label>
                   <input
@@ -279,7 +249,6 @@ const handleSubmit = async (e) => {
                   <p className="text-xs text-gray-500 mt-1">Minimum order: 100 units</p>
                 </div>
 
-                {/* Printing */}
                 <div>
                   <label className="label">
                     <FaPalette className="inline mr-2" />
@@ -296,7 +265,6 @@ const handleSubmit = async (e) => {
                   </select>
                 </div>
 
-                {/* Number of Colors (if printing) */}
                 {formData.printingRequired === 'yes' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
@@ -319,7 +287,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Additional Details */}
             <div className="card">
               <h2 className="text-2xl font-bold mb-6">Additional Details</h2>
               
@@ -350,7 +317,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="text-center">
               <button
                 type="submit"
@@ -370,14 +336,13 @@ const handleSubmit = async (e) => {
                 )}
               </button>
               <p className="text-sm text-gray-600 mt-4">
-                We'll respond within 24 hours with a detailed quotation
+                We will respond within 24 hours with a detailed quotation
               </p>
             </div>
           </form>
         </div>
       </section>
 
-      {/* Contact Info */}
       <section className="section-padding bg-gray-50">
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold mb-8">Need Immediate Assistance?</h2>

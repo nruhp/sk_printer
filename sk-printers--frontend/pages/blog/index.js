@@ -21,56 +21,17 @@ export default function Blog() {
     { id: 'company-news', name: 'Company News' },
   ];
 
-  // Sample blog data (replace with API call)
-  const sampleBlogs = [
-    {
-      _id: '1',
-      title: 'Top 10 Packaging Tips for E-commerce Businesses',
-      slug: 'top-10-packaging-tips-ecommerce',
-      excerpt: 'Learn how to choose the right packaging for your e-commerce products and reduce shipping costs.',
-      category: 'packaging-tips',
-      featuredImage: { url: '/images/blog1.jpg', alt: 'Packaging tips' },
-      author: { name: 'SK Printers Team' },
-      readTime: 5,
-      publishedAt: new Date('2024-02-10'),
-      tags: ['e-commerce', 'packaging', 'tips'],
-    },
-    {
-      _id: '2',
-      title: 'How to Choose Between 3-Ply, 5-Ply, and 7-Ply Boxes',
-      slug: 'choose-3ply-5ply-7ply-boxes',
-      excerpt: 'A comprehensive guide to understanding the differences and choosing the right box strength for your products.',
-      category: 'guides',
-      featuredImage: { url: '/images/blog2.jpg', alt: 'Box comparison' },
-      author: { name: 'Technical Team' },
-      readTime: 8,
-      publishedAt: new Date('2024-02-08'),
-      tags: ['guide', 'corrugated boxes', 'packaging'],
-    },
-    {
-      _id: '3',
-      title: 'Sustainable Packaging: Why It Matters in 2024',
-      slug: 'sustainable-packaging-2024',
-      excerpt: 'Discover the environmental impact of packaging and how choosing eco-friendly options benefits your business.',
-      category: 'sustainability',
-      featuredImage: { url: '/images/blog3.jpg', alt: 'Sustainable packaging' },
-      author: { name: 'SK Printers Team' },
-      readTime: 6,
-      publishedAt: new Date('2024-02-05'),
-      tags: ['sustainability', 'eco-friendly', 'environment'],
-    },
-  ];
-
   useEffect(() => {
     fetchBlogs();
   }, []);
 
   const fetchBlogs = async () => {
     try {
-      setBlogs(sampleBlogs);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/blogs`);
+      setBlogs(res.data.data || []);
     } catch (error) {
       console.error('Failed to fetch blogs:', error);
-      setBlogs(sampleBlogs);
+      setBlogs([]);
     } finally {
       setLoading(false);
     }
@@ -79,7 +40,7 @@ export default function Blog() {
   const filteredBlogs = blogs.filter(blog => {
     const matchesCategory = selectedCategory === 'all' || blog.category === selectedCategory;
     const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -126,11 +87,10 @@ export default function Blog() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                  selectedCategory === category.id
+                className={`px-6 py-2 rounded-full font-semibold transition-all ${selectedCategory === category.id
                     ? 'bg-primary-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 {category.name}
               </button>
@@ -201,7 +161,7 @@ export default function Blog() {
                     ))}
                   </div>
 
-                  <Link 
+                  <Link
                     href={`/blog/${blog.slug}`}
                     className="text-primary-600 font-semibold hover:text-primary-700 inline-flex items-center"
                   >
