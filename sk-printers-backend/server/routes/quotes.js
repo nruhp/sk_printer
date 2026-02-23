@@ -6,11 +6,41 @@ const { sendQuoteEmail } = require('../services/emailService');
 // POST /api/quotes - Submit quote request
 router.post('/', async (req, res) => {
   try {
-    const {
-      name, email, phone, company,
+    const body = req.body;
+
+    // Accept BOTH flat format (old) AND nested format (new frontend sends nested)
+    // Nested format: { customerInfo: {name, email, phone, company}, boxRequirements: {type, quantity, ...} }
+    // Flat format:   { name, email, phone, boxType, quantity, ... }
+
+    let name, email, phone, company,
       boxType, quantity, length, width, height,
-      printing, printColors, specialRequirements
-    } = req.body;
+      printing, printColors, specialRequirements, useCase;
+
+    if (body.customerInfo) {
+      // Nested format from get-quote.js frontend
+      name = body.customerInfo.name;
+      email = body.customerInfo.email;
+      phone = body.customerInfo.phone;
+      company = body.customerInfo.company;
+
+      boxType = body.boxRequirements?.type;
+      quantity = body.boxRequirements?.quantity;
+      length = body.boxRequirements?.dimensions?.length;
+      width = body.boxRequirements?.dimensions?.width;
+      height = body.boxRequirements?.dimensions?.height;
+      printing = body.boxRequirements?.printingRequired;
+      printColors = body.boxRequirements?.colors;
+
+      specialRequirements = body.additionalDetails?.specialRequirements;
+      useCase = body.additionalDetails?.useCase;
+    } else {
+      // Flat format
+      ({
+        name, email, phone, company,
+        boxType, quantity, length, width, height,
+        printing, printColors, specialRequirements
+      } = body);
+    }
 
     // Validate required fields
     if (!name || !email || !phone || !boxType || !quantity) {
@@ -24,7 +54,7 @@ router.post('/', async (req, res) => {
     const validBoxTypes = ['3-ply', '5-ply', '7-ply', 'custom'];
     const normalizedBoxType = validBoxTypes.includes(boxType) ? boxType : 'custom';
 
-    // Map flat form fields to the nested Quote schema structure
+    // Map to the nested Quote schema structure
     const quote = await Quote.create({
       customerInfo: {
         name,
@@ -40,27 +70,27 @@ router.post('/', async (req, res) => {
           length: length ? parseFloat(length) : undefined,
           width: width ? parseFloat(width) : undefined,
           height: height ? parseFloat(height) : undefined,
-          unit: 'cm',
+          unit: 'inch',
         },
         colors: printColors || '',
       },
       additionalDetails: {
+        useCase: useCase || '',
         specialRequirements: specialRequirements || '',
       },
       status: 'pending',
     });
 
-    // Send email notification
+    // Send email notification (non-blocking)
     try {
       await sendQuoteEmail({
         name, email, phone, company,
-        boxType, quantity, length, width, height,
+        boxType: normalizedBoxType, quantity, length, width, height,
         printing, printColors, specialRequirements
       });
       console.log('✅ Quote email sent to admin');
     } catch (emailError) {
       console.error('❌ Quote email sending failed:', emailError.message);
-      // Don't fail the request if email fails
     }
 
     res.status(201).json({
@@ -83,7 +113,7 @@ router.get('/', async (req, res) => {
   try {
     const quotes = await Quote.find().sort({ createdAt: -1 });
 
-    // Flatten the nested structure for the admin panel to consume easily
+    // Flatten the nested structure for the admin panel
     const flatQuotes = quotes.map(q => ({
       _id: q._id,
       name: q.customerInfo?.name,

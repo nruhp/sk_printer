@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Blog = require('../models/Blog');
 const { protect, restrictTo } = require('../middleware/auth');
-const upload = require('../middleware/upload');
 
 // @route   GET /api/blogs
 // @desc    Get all published blogs (public) or all blogs (admin with ?all=true)
@@ -18,7 +17,6 @@ router.get('/', async (req, res) => {
     if (tag) query.tags = tag;
     if (featured) query.isFeatured = featured === 'true';
 
-    // Search functionality
     if (search) {
       query.$text = { $search: search };
     }
@@ -27,7 +25,7 @@ router.get('/', async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit)
-      .select('-content'); // Exclude full content in list view
+      .select('-content');
 
     const count = await Blog.countDocuments(query);
 
@@ -39,10 +37,7 @@ router.get('/', async (req, res) => {
       data: blogs,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -54,13 +49,9 @@ router.get('/related/:slug', async (req, res) => {
     const currentBlog = await Blog.findOne({ slug: req.params.slug });
 
     if (!currentBlog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog post not found',
-      });
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
     }
 
-    // Find related blogs by category or tags
     const relatedBlogs = await Blog.find({
       _id: { $ne: currentBlog._id },
       isPublished: true,
@@ -72,15 +63,9 @@ router.get('/related/:slug', async (req, res) => {
       .limit(3)
       .select('-content');
 
-    res.json({
-      success: true,
-      data: relatedBlogs,
-    });
+    res.json({ success: true, data: relatedBlogs });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -92,66 +77,45 @@ router.get('/:slug', async (req, res) => {
     const blog = await Blog.findOne({ slug: req.params.slug });
 
     if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog post not found',
-      });
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
     }
 
     // Increment views using findByIdAndUpdate to avoid triggering pre-save hooks
     await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
 
-    res.json({
-      success: true,
-      data: blog,
-    });
+    res.json({ success: true, data: blog });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 // @route   POST /api/blogs
 // @desc    Create new blog
 // @access  Private/Admin
-router.post('/', protect, restrictTo('admin'), upload.single('featuredImage'), async (req, res) => {
+// NOTE: No multer middleware here - admin form sends JSON, not multipart/form-data
+router.post('/', protect, restrictTo('admin'), async (req, res) => {
   try {
     const body = req.body;
 
-    // Map admin form `status` field to `isPublished` boolean
     const blogData = {
       title: body.title,
       content: body.content,
       excerpt: body.excerpt,
       category: body.category,
-      tags: Array.isArray(body.tags) ? body.tags : (body.tags ? body.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+      tags: Array.isArray(body.tags)
+        ? body.tags
+        : (body.tags ? body.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
       isPublished: body.status === 'published' || body.isPublished === true || body.isPublished === 'true',
       isFeatured: body.isFeatured === true || body.isFeatured === 'true',
       readTime: body.readTime ? parseInt(body.readTime) : undefined,
     };
 
-    // Handle uploaded featured image
-    if (req.file) {
-      blogData.featuredImage = {
-        url: `/uploads/${req.file.filename}`,
-        alt: blogData.title,
-      };
-    }
-
     const blog = await Blog.create(blogData);
 
-    res.status(201).json({
-      success: true,
-      data: blog,
-    });
+    res.status(201).json({ success: true, data: blog });
   } catch (error) {
     console.error('Error saving blog:', error.message);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -161,7 +125,6 @@ router.post('/', protect, restrictTo('admin'), upload.single('featuredImage'), a
 router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
   try {
     const body = req.body;
-
     const updateData = { ...body };
 
     // Map `status` field to `isPublished`
@@ -182,21 +145,12 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
     );
 
     if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog post not found',
-      });
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
     }
 
-    res.json({
-      success: true,
-      data: blog,
-    });
+    res.json({ success: true, data: blog });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -208,21 +162,12 @@ router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
     const blog = await Blog.findByIdAndDelete(req.params.id);
 
     if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog post not found',
-      });
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
     }
 
-    res.json({
-      success: true,
-      message: 'Blog post deleted successfully',
-    });
+    res.json({ success: true, message: 'Blog post deleted successfully' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

@@ -2,34 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const { protect, restrictTo } = require('../middleware/auth');
-const upload = require('../middleware/upload');
 
 // @route   GET /api/products
 // @desc    Get all products
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { category, type, featured, active = 'true' } = req.query;
+    const { category, type, featured, active } = req.query;
 
     let query = {};
 
     if (category) query.category = category;
     if (type) query.type = type;
     if (featured) query.isFeatured = featured === 'true';
-    if (active) query.isActive = active === 'true';
+    // Only filter by active if explicitly passed; admin fetches all
+    if (active !== undefined) query.isActive = active === 'true';
 
     const products = await Product.find(query).sort({ createdAt: -1 });
 
-    res.json({
-      success: true,
-      count: products.length,
-      data: products,
-    });
+    res.json({ success: true, count: products.length, data: products });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -41,28 +34,20 @@ router.get('/:slug', async (req, res) => {
     const product = await Product.findOne({ slug: req.params.slug });
 
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
-      });
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    res.json({
-      success: true,
-      data: product,
-    });
+    res.json({ success: true, data: product });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 // @route   POST /api/products
 // @desc    Create new product
 // @access  Private/Admin
-router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async (req, res) => {
+// NOTE: No multer middleware — admin form sends JSON, not multipart/form-data
+router.post('/', protect, restrictTo('admin'), async (req, res) => {
   try {
     const body = req.body;
 
@@ -71,37 +56,21 @@ router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async 
       name: body.name,
       description: body.description,
       category: body.category || '3-ply',
-      // Admin form uses `type` or falls back to 'corrugated'
       type: body.type || 'corrugated',
       pricing: {
-        basePrice: parseFloat(body.price || body['pricing.basePrice'] || body.basePrice || 0),
-        minQuantity: parseInt(body.minOrder || body['pricing.minQuantity'] || body.minQuantity || 100),
+        basePrice: parseFloat(body.price || body.basePrice || 0),
+        minQuantity: parseInt(body.minOrder || body.minQuantity || 100),
       },
       isActive: body.stock !== 'out-of-stock',
       isFeatured: body.isFeatured === 'true' || body.isFeatured === true,
     };
 
-    // Handle uploaded images
-    if (req.files && req.files.length > 0) {
-      productData.images = req.files.map((file, index) => ({
-        url: `/uploads/${file.filename}`,
-        alt: productData.name,
-        isPrimary: index === 0,
-      }));
-    }
-
     const product = await Product.create(productData);
 
-    res.status(201).json({
-      success: true,
-      data: product,
-    });
+    res.status(201).json({ success: true, data: product });
   } catch (error) {
     console.error('Error saving product:', error.message);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -111,8 +80,6 @@ router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async 
 router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
   try {
     const body = req.body;
-
-    // Map admin form fields to schema structure for updates too
     const updateData = { ...body };
 
     if (body.price !== undefined) {
@@ -140,21 +107,12 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
     );
 
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
-      });
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    res.json({
-      success: true,
-      data: product,
-    });
+    res.json({ success: true, data: product });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -166,21 +124,12 @@ router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
-      });
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    res.json({
-      success: true,
-      message: 'Product deleted successfully',
-    });
+    res.json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
