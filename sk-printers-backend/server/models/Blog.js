@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 
 const blogSchema = new mongoose.Schema({
+
   title: {
     type: String,
     required: [true, 'Blog title is required'],
@@ -75,23 +76,23 @@ const blogSchema = new mongoose.Schema({
 });
 
 // Generate slug and calculate read time before saving
-blogSchema.pre('save', function(next) {
+blogSchema.pre('save', function (next) {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
-  
+
   // Calculate read time (assuming 200 words per minute)
   if (this.isModified('content')) {
     const wordCount = this.content.split(/\s+/).length;
     this.readTime = Math.ceil(wordCount / 200);
   }
-  
+
   this.updatedAt = Date.now();
-  
+
   if (this.isPublished && !this.publishedAt) {
     this.publishedAt = Date.now();
   }
-  
+
   next();
 });
 
