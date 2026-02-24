@@ -1,5 +1,14 @@
 const nodemailer = require('nodemailer');
 
+// Log email config on startup (masks the password)
+console.log('📧 Email config:', {
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  user: process.env.EMAIL_USER,
+  pass: process.env.EMAIL_PASS ? `${process.env.EMAIL_PASS.substring(0, 4)}****` : 'NOT SET',
+  admin: process.env.ADMIN_EMAIL,
+});
+
 // Create transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
@@ -11,10 +20,17 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-    connectionTimeout: 10000,  // 10 seconds - fail fast if SMTP unreachable
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
+};
+
+// Verify transporter and throw a detailed error if it fails
+const verifyAndSend = async (transporter, mailOptions) => {
+  // Verify connection first
+  await transporter.verify();
+  return transporter.sendMail(mailOptions);
 };
 
 // Send Contact Form Email to Admin
@@ -107,8 +123,8 @@ const sendContactEmail = async (contactData) => {
     `,
   };
 
-  await transporter.sendMail(adminMailOptions);
-  await transporter.sendMail(customerMailOptions);
+  await verifyAndSend(transporter, adminMailOptions);
+  await verifyAndSend(transporter, customerMailOptions);
 };
 
 // Send Quote Request Email to Admin
@@ -226,8 +242,8 @@ const sendQuoteEmail = async (quoteData) => {
     `,
   };
 
-  await transporter.sendMail(adminMailOptions);
-  await transporter.sendMail(customerMailOptions);
+  await verifyAndSend(transporter, adminMailOptions);
+  await verifyAndSend(transporter, customerMailOptions);
 };
 
 module.exports = { sendContactEmail, sendQuoteEmail };

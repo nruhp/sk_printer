@@ -59,6 +59,36 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Test email endpoint (for debugging SMTP)
+app.get('/api/test-email', async (req, res) => {
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    connectionTimeout: 10000,
+    socketTimeout: 15000,
+  });
+
+  try {
+    await transporter.verify();
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.ADMIN_EMAIL,
+      subject: 'SK Printers - Email Test',
+      text: `Email test at ${new Date().toISOString()}. Config: user=${process.env.EMAIL_USER}, admin=${process.env.ADMIN_EMAIL}`,
+    });
+    res.json({ success: true, message: 'Test email sent!', to: process.env.ADMIN_EMAIL });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message, code: error.code });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
