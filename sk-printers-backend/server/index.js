@@ -59,34 +59,20 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Test email endpoint (for debugging SMTP)
+// Test email endpoint (using Resend)
 app.get('/api/test-email', async (req, res) => {
-  const nodemailer = require('nodemailer');
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 10000,
-    socketTimeout: 15000,
-    dnsLookupIpVersion: 'ipv4first',
-    family: 4,
-  });
-
+  const { Resend } = require('resend');
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
-    await transporter.verify();
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    const result = await resend.emails.send({
+      from: 'SK Printers <onboarding@resend.dev>',
       to: process.env.ADMIN_EMAIL,
-      subject: 'SK Printers - Email Test',
-      text: `Email test at ${new Date().toISOString()}. Config: user=${process.env.EMAIL_USER}, admin=${process.env.ADMIN_EMAIL}`,
+      subject: 'SK Printers - Email Test ✅',
+      text: `Email test successful at ${new Date().toISOString()}. Resend API is working! Admin: ${process.env.ADMIN_EMAIL}`,
     });
-    res.json({ success: true, message: 'Test email sent!', to: process.env.ADMIN_EMAIL });
+    res.json({ success: true, message: 'Test email sent via Resend!', to: process.env.ADMIN_EMAIL, id: result.id });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message, code: error.code });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
