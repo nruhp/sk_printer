@@ -1,14 +1,35 @@
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { 
+import {
   FaBox, FaLeaf, FaTruck, FaCertificate, FaIndustry,
   FaCheckCircle, FaStar, FaQuoteLeft, FaArrowRight
 } from 'react-icons/fa';
 import Layout from '../components/layout/Layout';
-
+import axios from 'axios';
 
 export default function Home() {
+  const [dynamicProducts, setDynamicProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const response = await axios.get(`${apiUrl}/products`);
+        if (response.data && response.data.success) {
+          setDynamicProducts(response.data.data.slice(0, 6)); // Show first 6 products
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching home products:', err);
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const stats = [
     { icon: <FaBox />, value: '50K+', label: 'Boxes Delivered', color: 'bg-blue-500' },
     { icon: <FaIndustry />, value: '500+', label: 'Business Clients', color: 'bg-green-500' },
@@ -34,26 +55,39 @@ export default function Home() {
     },
   ];
 
-  const products = [
+  const staticProducts = [
     {
+      _id: 'static-1',
       title: '3-Ply Corrugated Boxes',
       description: 'Perfect for lightweight items and e-commerce shipping',
       features: ['Burst strength: 180-200', 'Weight capacity: 5-10kg', 'Cost-effective'],
       image: '/images/3ply-box.jpg'
     },
     {
+      _id: 'static-2',
       title: '5-Ply Corrugated Boxes',
       description: 'Ideal for medium-weight products and retail packaging',
       features: ['Burst strength: 200-250', 'Weight capacity: 10-20kg', 'Versatile use'],
       image: '/images/5ply-box.jpg'
     },
     {
+      _id: 'static-3',
       title: '7-Ply Corrugated Boxes',
       description: 'Heavy-duty boxes for industrial and export shipping',
       features: ['Burst strength: 250-300', 'Weight capacity: 20-30kg', 'Maximum protection'],
       image: '/images/7ply-box.jpg'
     },
   ];
+
+  const displayProducts = dynamicProducts.length > 0
+    ? dynamicProducts.map(p => ({
+      _id: p._id,
+      title: p.name,
+      description: p.description,
+      features: p.features && p.features.length > 0 ? p.features : [`Category: ${p.category}`, `Type: ${p.type}`],
+      image: p.images && p.images.length > 0 ? (p.images.find(img => img.isPrimary)?.url || p.images[0].url) : null
+    }))
+    : staticProducts;
 
   const testimonials = [
     {
@@ -89,10 +123,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden min-h-[600px] flex items-center">
         <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.svg')]"></div>
-        
+
         <div className="container-custom relative z-10 py-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -103,7 +137,7 @@ export default function Home() {
               <p className="text-xl mb-8 text-gray-100">
                 ISO 2045 Compliant • FSC Certified • 100% Recyclable • Serving 500+ Companies
               </p>
-              
+
               <div className="flex flex-wrap gap-4 mb-8">
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                   <FaCheckCircle className="text-green-400 mr-2" />
@@ -120,12 +154,12 @@ export default function Home() {
                   Get Instant Quote
                 </a>
                 <Link href="/products" className="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 text-lg px-8 py-4 text-center">
-                    View Products
-                  </Link>
+                  View Products
+                </Link>
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -178,16 +212,20 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {products.map((product, index) => (
+            {displayProducts.map((product, index) => (
               <motion.div
-                key={index}
+                key={product._id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="card group hover:scale-105 transition-transform"
               >
-                <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400">
-                  <FaBox size={64} />
+                <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                  {product.image ? (
+                    <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <FaBox size={64} className="text-gray-400" />
+                  )}
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{product.title}</h3>
                 <p className="text-gray-600 mb-4">{product.description}</p>
@@ -200,8 +238,8 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link href="/products" className="btn btn-outline w-full group-hover:bg-primary-600 group-hover:text-white">
-                    Learn More
-                  </Link>
+                  Learn More
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -256,11 +294,11 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/get-quote" className="btn bg-white text-primary-700 hover:bg-gray-100 text-lg px-8 py-4">
-                Request a Quote
-              </Link>
+              Request a Quote
+            </Link>
             <Link href="/contact" className="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 text-lg px-8 py-4">
-                Contact Us
-              </Link>
+              Contact Us
+            </Link>
           </div>
         </div>
       </section>

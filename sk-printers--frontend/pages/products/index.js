@@ -5,12 +5,17 @@ import Layout from '../../components/layout/Layout';
 import { FaBox, FaCheckCircle, FaRuler, FaWeight, FaIndustry } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
+import axios from 'axios';
+
 export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [dynamicProducts, setDynamicProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const products = [
+  const staticProducts = [
     {
-      id: 1,
+      _id: 'static-1',
       name: '3-Ply Corrugated Boxes',
       category: '3-ply',
       description: 'Perfect for lightweight items and e-commerce shipping',
@@ -20,6 +25,10 @@ export default function ProductsPage() {
         edgeCrush: '3.5 kN/m',
         weight: '5-10 kg capacity',
         thickness: '2-3 mm'
+      },
+      technicalSpecs: {
+        burstStrength: '180-200 kPa',
+        edgeCrushTest: '3.5 kN/m'
       },
       features: [
         'Lightweight and cost-effective',
@@ -39,7 +48,7 @@ export default function ProductsPage() {
       }
     },
     {
-      id: 2,
+      _id: 'static-2',
       name: '5-Ply Corrugated Boxes',
       category: '5-ply',
       description: 'Ideal for medium-weight products and retail packaging',
@@ -49,6 +58,10 @@ export default function ProductsPage() {
         edgeCrush: '5.5 kN/m',
         weight: '10-20 kg capacity',
         thickness: '5-6 mm'
+      },
+      technicalSpecs: {
+        burstStrength: '200-250 kPa',
+        edgeCrushTest: '5.5 kN/m'
       },
       features: [
         'Medium strength protection',
@@ -68,7 +81,7 @@ export default function ProductsPage() {
       }
     },
     {
-      id: 3,
+      _id: 'static-3',
       name: '7-Ply Corrugated Boxes',
       category: '7-ply',
       description: 'Heavy-duty boxes for industrial and export shipping',
@@ -78,6 +91,10 @@ export default function ProductsPage() {
         edgeCrush: '7.5 kN/m',
         weight: '20-30 kg capacity',
         thickness: '8-10 mm'
+      },
+      technicalSpecs: {
+        burstStrength: '250-300 kPa',
+        edgeCrushTest: '7.5 kN/m'
       },
       features: [
         'Maximum strength and durability',
@@ -97,7 +114,7 @@ export default function ProductsPage() {
       }
     },
     {
-      id: 4,
+      _id: 'static-4',
       name: 'Custom Printed Boxes',
       category: 'custom',
       description: 'Fully customizable boxes with your brand design',
@@ -107,6 +124,10 @@ export default function ProductsPage() {
         edgeCrush: 'Customizable',
         weight: 'Custom capacity',
         thickness: 'Variable'
+      },
+      technicalSpecs: {
+        burstStrength: 'Custom',
+        edgeCrushTest: 'Custom'
       },
       features: [
         'Full color printing',
@@ -127,6 +148,38 @@ export default function ProductsPage() {
     }
   ];
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const response = await axios.get(`${apiUrl}/products`);
+
+        if (response.data && response.data.success) {
+          // Normalize API products to match frontend expectations if necessary
+          const apiProducts = response.data.data.map(product => ({
+            ...product,
+            // Ensure specifications object exists for UI
+            specifications: {
+              burstStrength: product.technicalSpecs?.burstStrength || 'N/A',
+              edgeCrush: product.technicalSpecs?.edgeCrushTest || 'N/A',
+              weight: product.specifications?.weight ? `${product.specifications.weight} kg` : 'N/A',
+              thickness: product.specifications?.material || 'Custom'
+            }
+          }));
+          setDynamicProducts(apiProducts);
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load dynamic products.');
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const categories = [
     { id: 'all', name: 'All Products' },
     { id: '3-ply', name: '3-Ply Boxes' },
@@ -135,9 +188,12 @@ export default function ProductsPage() {
     { id: 'custom', name: 'Custom Boxes' }
   ];
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  // Combine static and dynamic products (excluding duplicates if any)
+  const allProducts = [...staticProducts, ...dynamicProducts];
+
+  const filteredProducts = selectedCategory === 'all'
+    ? allProducts
+    : allProducts.filter(p => p.category === selectedCategory);
 
   return (
     <Layout>
@@ -169,11 +225,10 @@ export default function ProductsPage() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                  selectedCategory === category.id
-                    ? 'bg-primary-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+                className={`px-6 py-3 rounded-full font-semibold transition-all ${selectedCategory === category.id
+                  ? 'bg-primary-600 text-white shadow-lg'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
               >
                 {category.name}
               </button>
@@ -188,15 +243,29 @@ export default function ProductsPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {filteredProducts.map((product, index) => (
               <motion.div
-                key={product.id}
+                key={product._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="card hover:shadow-2xl transition-shadow"
               >
-                {/* Product Image Placeholder */}
-                <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6 flex items-center justify-center">
-                  <FaBox size={80} className="text-gray-400" />
+                {/* Product Image */}
+                <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images.find(img => img.isPrimary)?.url || product.images[0].url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <FaBox size={80} className="text-gray-400" />
+                  )}
                 </div>
 
                 {/* Product Info */}
