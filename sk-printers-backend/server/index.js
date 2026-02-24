@@ -63,10 +63,9 @@ app.get('/api/health', (req, res) => {
 app.get('/api/test-email', async (req, res) => {
   const nodemailer = require('nodemailer');
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,

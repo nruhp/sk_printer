@@ -9,13 +9,12 @@ console.log('📧 Email config:', {
   admin: process.env.ADMIN_EMAIL,
 });
 
-// Create transporter
+// Create transporter - use port 465 (SSL) instead of 587 (TLS) as Railway blocks 587
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: false,
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,  // true for 465, false for 587
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
