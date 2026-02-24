@@ -9,12 +9,12 @@ console.log('📧 Email config:', {
   admin: process.env.ADMIN_EMAIL,
 });
 
-// Create transporter - use port 465 (SSL) instead of 587 (TLS) as Railway blocks 587
+// Create transporter - use port 465 (SSL), force IPv4 to avoid Railway IPv6 issues
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true,  // true for 465, false for 587
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -22,6 +22,8 @@ const createTransporter = () => {
     connectionTimeout: 15000,
     greetingTimeout: 15000,
     socketTimeout: 20000,
+    dnsLookupIpVersion: 'ipv4first',  // Force IPv4 - Railway can't reach Gmail via IPv6
+    family: 4,
   });
 };
 

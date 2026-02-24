@@ -72,6 +72,8 @@ app.get('/api/test-email', async (req, res) => {
     },
     connectionTimeout: 10000,
     socketTimeout: 15000,
+    dnsLookupIpVersion: 'ipv4first',
+    family: 4,
   });
 
   try {
