@@ -35,7 +35,7 @@ export default function Contact() {
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
         setMessage('Message sent successfully! We\'ll get back to you soon.');
         setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
@@ -127,13 +127,12 @@ export default function Contact() {
             <div>
               <div className="bg-white rounded-xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
-                
+
                 {message && (
-                  <div className={`mb-6 p-4 rounded-lg ${
-                    message.includes('success') 
-                      ? 'bg-green-100 text-green-800 border border-green-200' 
+                  <div className={`mb-6 p-4 rounded-lg ${message.includes('success')
+                      ? 'bg-green-100 text-green-800 border border-green-200'
                       : 'bg-red-100 text-red-800 border border-red-200'
-                  }`}>
+                    }`}>
                     {message}
                   </div>
                 )}
@@ -261,8 +260,16 @@ export default function Contact() {
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold mb-4">Visit Our Facility</h2>
           <p className="text-gray-600 mb-8">Come see our state-of-the-art manufacturing process</p>
-          <div className="bg-gray-300 h-96 rounded-xl flex items-center justify-center">
-            <p className="text-gray-600">Google Maps Integration (https://maps.app.goo.gl/WgPpBMo5P4XbuAvR9?g_st=aw)</p>
+          <div className="bg-gray-300 h-96 rounded-xl overflow-hidden shadow-inner">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3513.533981622214!2d77.86108171159081!3d28.282144299804234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ca90051e431ef%3A0xf4be7cb1599b7382!2sS.K%20Printers!5e0!3m2!1sen!2sin!4v1771926128146!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
       </section>
