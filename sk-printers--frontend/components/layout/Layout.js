@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FaBars, FaTimes, FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaEnvelope, FaMapMarkerAlt, FaLinkedin, FaInstagram } from 'react-icons/fa';
 
 export default function Layout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,8 +31,6 @@ export default function Layout({ children }) {
             </a>
           </div>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-primary-400"><FaFacebook /></a>
-            <a href="#" className="hover:text-primary-400"><FaTwitter /></a>
             <a href="#" className="hover:text-primary-400"><FaLinkedin /></a>
             <a href="#" className="hover:text-primary-400"><FaInstagram /></a>
           </div>
@@ -55,8 +53,8 @@ export default function Layout({ children }) {
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}
                   className={`font-semibold transition-colors ${isActive(item.href)
-                      ? 'text-primary-600'
-                      : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600'
+                    : 'text-gray-700 hover:text-primary-600'
                     }`}
                 >
                   {item.name}
@@ -80,8 +78,8 @@ export default function Layout({ children }) {
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}
                   className={`block py-3 px-4 font-semibold ${isActive(item.href)
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-700 hover:bg-gray-50'
+                    ? 'text-primary-600 bg-primary-50'
+                    : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -116,8 +114,6 @@ export default function Layout({ children }) {
                 ISO certified with over 20 years of experience.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="hover:text-primary-400"><FaFacebook size={20} /></a>
-                <a href="#" className="hover:text-primary-400"><FaTwitter size={20} /></a>
                 <a href="#" className="hover:text-primary-400"><FaLinkedin size={20} /></a>
                 <a href="#" className="hover:text-primary-400"><FaInstagram size={20} /></a>
               </div>
@@ -176,7 +172,6 @@ export default function Layout({ children }) {
               <div className="flex gap-6 text-sm">
                 <Link href="/privacy-policy" className="hover:text-primary-400">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-primary-400">Terms & Conditions</Link>
-                <Link href="/sitemap" className="hover:text-primary-400">Sitemap</Link>
               </div>
             </div>
           </div>
