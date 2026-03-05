@@ -66,12 +66,9 @@ npm run server   # Backend on http://localhost:5000
 - **Admin Panel:** http://localhost:3000/admin
 - **API:** http://localhost:5000/api/health
 
-## 📝 Default Admin Login
+Admin credentials can be found and configured in your `.env.local` file.
 
-Email: `admin@skprinters.com`
-Password: `Admin@123`
-
-**⚠️ IMPORTANT: Change these credentials immediately in production!**
+**⚠️ IMPORTANT: Set your own secure credentials in `.env.local` for production!**
 
 ## 🎯 What's Next?
 

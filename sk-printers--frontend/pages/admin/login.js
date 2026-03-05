@@ -34,7 +34,7 @@ export default function AdminLogin() {
         // Save token to localStorage
         localStorage.setItem('token', response.data.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data));
-        
+
         toast.success('Login successful!');
         router.push('/admin/dashboard');
       }
@@ -85,7 +85,7 @@ export default function AdminLogin() {
                   onChange={handleChange}
                   required
                   className="input-field"
-                  placeholder="admin@skprinters.com"
+                  placeholder="email@example.com"
                 />
               </div>
 
@@ -134,21 +134,6 @@ export default function AdminLogin() {
               </button>
             </form>
 
-            {/* Default Credentials Info */}
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800 font-semibold mb-2">
-                🔑 Default Admin Credentials:
-              </p>
-              <p className="text-sm text-yellow-700">
-                Email: <code className="bg-yellow-100 px-2 py-1 rounded">admin@skprinters.com</code>
-              </p>
-              <p className="text-sm text-yellow-700">
-                Password: <code className="bg-yellow-100 px-2 py-1 rounded">Admin@123</code>
-              </p>
-              <p className="text-xs text-yellow-600 mt-2">
-                ⚠️ Please change these credentials after first login!
-              </p>
-            </div>
 
             {/* Back to Site */}
             <div className="mt-6 text-center">

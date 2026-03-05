@@ -121,9 +121,7 @@ Edit `components/layout/Layout.js`:
 ### 4. Add Content
 Login to admin panel at http://localhost:3000/admin
 
-Default credentials:
-- Email: admin@skprinters.com
-- Password: Admin@123
+Admin credentials can be found and configured in your `.env.local` file.
 
 Then add:
 - Products
