@@ -72,7 +72,7 @@ router.post('/login', async (req, res) => {
 
     // Check for user (include password)
     const user = await User.findOne({ email }).select('+password');
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -82,7 +82,7 @@ router.post('/login', async (req, res) => {
 
     // Check if password matches
     const isMatch = await user.comparePassword(password);
-    
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -125,10 +125,46 @@ router.post('/login', async (req, res) => {
 router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    
+
     res.json({
       success: true,
       data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// @route   PUT /api/auth/update-password
+// @desc    Update user password
+// @access  Private
+router.put('/update-password', protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    // Check for user (include password)
+    const user = await User.findById(req.user.id).select('+password');
+
+    // Check if current password matches
+    const isMatch = await user.comparePassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect',
+      });
+    }
+
+    // Update password (will be hashed by pre-save middleware)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully',
     });
   } catch (error) {
     res.status(500).json({
