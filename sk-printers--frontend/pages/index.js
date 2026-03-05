@@ -31,9 +31,9 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { icon: <FaBox />, value: '50K+', label: 'Boxes Delivered', color: 'bg-blue-500' },
+    { icon: <FaBox />, value: '5M+', label: 'Boxes Delivered', color: 'bg-blue-500' },
     { icon: <FaIndustry />, value: '500+', label: 'Business Clients', color: 'bg-green-500' },
-    { icon: <FaTruck />, value: '48hrs', label: 'Delivery Time', color: 'bg-orange-500' },
+    { icon: <FaTruck />, value: '72 hours', label: 'Delivery Time', color: 'bg-orange-500' },
     { icon: <FaStar />, value: '99.8%', label: 'Quality Standards', color: 'bg-purple-500' },
   ];
 
@@ -46,7 +46,7 @@ export default function Home() {
     {
       icon: <FaTruck />,
       title: 'Fast Delivery',
-      description: '48-hour guaranteed delivery across major cities'
+      description: '72-hour guaranteed delivery across major cities'
     },
     {
       icon: <FaCertificate />,
@@ -117,7 +117,7 @@ export default function Home() {
     <Layout>
       <Head>
         <title>SK Printers - Manufacturing Sustainable Packaging Solutions</title>
-        <meta name="description" content="Leading manufacturer of eco-friendly cardboard boxes. 3-ply, 5-ply, 7-ply corrugated packaging with custom printing. ISO certified with 48-hour delivery." />
+        <meta name="description" content="Leading manufacturer of eco-friendly cardboard boxes. 3-ply, 5-ply, 7-ply corrugated packaging with custom printing. ISO certified with 72-hour delivery." />
       </Head>
 
       {/* Hero Section */}
@@ -145,7 +145,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                   <FaCheckCircle className="text-green-400 mr-2" />
-                  <span className="text-sm font-semibold">48-Hour Service</span>
+                  <span className="text-sm font-semibold">72-Hour Service</span>
                 </div>
               </div>
 

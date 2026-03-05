@@ -2,11 +2,11 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FaBox, 
-  FaLeaf, 
-  FaTruck, 
-  FaCertificate, 
+import {
+  FaBox,
+  FaLeaf,
+  FaTruck,
+  FaCertificate,
   FaIndustry,
   FaCheckCircle,
   FaStar,
@@ -22,9 +22,9 @@ import ContactForm from '../components/common/ContactForm';
 
 export default function Home() {
   const [stats] = useState({
-    clients: '50K+',
-    boxes: '500+',
-    delivery: '48hrs',
+    clients: '500+',
+    boxes: '5M+',
+    delivery: '72 hours',
     satisfaction: '99.8%'
   });
 
@@ -32,7 +32,7 @@ export default function Home() {
     <Layout>
       <Head>
         <title>SK Printers - Manufacturing Sustainable Packaging Solutions</title>
-        <meta name="description" content="Leading manufacturer of eco-friendly cardboard boxes. 3-ply, 5-ply, 7-ply corrugated packaging with custom printing. ISO certified with 48-hour delivery." />
+        <meta name="description" content="Leading manufacturer of eco-friendly cardboard boxes. 3-ply, 5-ply, 7-ply corrugated packaging with custom printing. ISO certified with 72-hour delivery." />
         <meta name="keywords" content="cardboard boxes, corrugated boxes, packaging, 3-ply boxes, 5-ply boxes, custom packaging, sustainable packaging" />
         <meta property="og:title" content="SK Printers - Sustainable Packaging Solutions" />
         <meta property="og:description" content="Premium quality cardboard boxes for all industries" />
@@ -46,10 +46,10 @@ export default function Home() {
         <div className="absolute inset-0 opacity-5" style={{
           backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
         }}></div>
-        
+
         <div className="container-custom relative z-10 py-20 md:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -60,7 +60,7 @@ export default function Home() {
               <p className="text-xl md:text-2xl mb-8 text-gray-100 leading-relaxed">
                 ISO 2045 Compliant • FSC 3485 Certified • Made with 100% Recyclable Material • Serving 500+ Companies
               </p>
-              
+
               <div className="flex gap-4 items-center mb-8">
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                   <FaCheckCircle className="text-green-400 mr-2" />
@@ -68,7 +68,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                   <FaCheckCircle className="text-green-400 mr-2" />
-                  <span className="text-sm font-semibold">48-Hour Quick Service</span>
+                  <span className="text-sm font-semibold">72-Hour Quick Service</span>
                 </div>
               </div>
 
@@ -86,7 +86,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -122,7 +122,7 @@ export default function Home() {
         {/* Wave Divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 80C1200 80 1320 70 1380 65L1440 60V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 80C1200 80 1320 70 1380 65L1440 60V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white" />
           </svg>
         </div>
       </section>
@@ -131,27 +131,27 @@ export default function Home() {
       <section className="section-padding -mt-16 relative z-10">
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <StatCard 
-              icon={<FaBox />} 
-              value="50K+" 
+            <StatCard
+              icon={<FaBox />}
+              value="5M+"
               label="Boxes Delivered"
               color="bg-blue-500"
             />
-            <StatCard 
-              icon={<FaIndustry />} 
-              value="500+" 
+            <StatCard
+              icon={<FaIndustry />}
+              value="500+"
               label="Business Clients"
               color="bg-green-500"
             />
-            <StatCard 
-              icon={<FaTruck />} 
-              value="48hrs" 
+            <StatCard
+              icon={<FaTruck />}
+              value="72 hours"
               label="Delivery Time"
               color="bg-orange-500"
             />
-            <StatCard 
-              icon={<FaStar />} 
-              value="99.8%" 
+            <StatCard
+              icon={<FaStar />}
+              value="99.8%"
               label="Quality Standards"
               color="bg-purple-500"
             />
@@ -166,7 +166,7 @@ export default function Home() {
 
 function StatCard({ icon, value, label, color }) {
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ scale: 1.05, y: -5 }}
       className="card text-center"
     >

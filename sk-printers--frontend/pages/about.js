@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 export default function About() {
   const stats = [
     { value: '500+', label: 'Happy Clients' },
-    { value: '50K+', label: 'Boxes Delivered' },
-    { value: '48hrs', label: 'Delivery Time' },
+    { value: '5M+', label: 'Boxes Delivered' },
+    { value: '72 hours', label: 'Delivery Time' },
     { value: '99.8%', label: 'Satisfaction Rate' },
   ];
 
@@ -25,7 +25,7 @@ export default function About() {
     {
       icon: <FaTruck />,
       title: 'Timely Delivery',
-      description: 'Guaranteed 48-hour delivery to major cities across India',
+      description: 'Guaranteed 72-hour delivery to major cities across India',
     },
     {
       icon: <FaUsers />,
@@ -75,17 +75,17 @@ export default function About() {
               <h2 className="text-4xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-700 leading-relaxed">
                 <p>
-                  Founded in <strong>2024</strong>, SK Printers was born from a simple yet powerful vision: to provide businesses with 
+                  Founded in <strong>2024</strong>, SK Printers was born from a simple yet powerful vision: to provide businesses with
                   high-quality, sustainable packaging solutions that don't compromise on strength or reliability.
                 </p>
                 <p>
-                  Starting as a modern manufacturing unit with cutting-edge technology, we've quickly grown into one of India's 
-                  trusted names in corrugated packaging. Our commitment to quality, innovation, and customer satisfaction has 
+                  Starting as a modern manufacturing unit with cutting-edge technology, we've quickly grown into one of India's
+                  trusted names in corrugated packaging. Our commitment to quality, innovation, and customer satisfaction has
                   helped us serve over 500+ businesses across various industries in our very first year.
                 </p>
                 <p>
-                  Today, we manufacture 3-ply, 5-ply, and 7-ply corrugated boxes with state-of-the-art machinery 
-                  and a dedicated team of professionals. Every box we produce carries our promise of quality, 
+                  Today, we manufacture 3-ply, 5-ply, and 7-ply corrugated boxes with state-of-the-art machinery
+                  and a dedicated team of professionals. Every box we produce carries our promise of quality,
                   sustainability, and timely delivery.
                 </p>
                 <p className="font-semibold text-primary-600 text-lg">
