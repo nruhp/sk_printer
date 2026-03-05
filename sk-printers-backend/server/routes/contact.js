@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Contact = require('../models/Contact');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 const { sendContactEmail } = require('../services/emailService');
 
 // POST /api/contact - Submit contact form
@@ -49,7 +50,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/contact - Get all contacts (admin only)
-router.get('/', async (req, res) => {
+router.get('/', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
     res.json({ success: true, data: contacts });
@@ -59,7 +60,7 @@ router.get('/', async (req, res) => {
 });
 
 // PUT /api/contact/:id - Update contact status
-router.put('/:id', async (req, res) => {
+router.put('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ success: true, data: contact });
@@ -69,7 +70,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/contact/:id - Delete contact
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     await Contact.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Contact deleted successfully' });

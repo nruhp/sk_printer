@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { protect } = require('../middleware/auth');
+const { protect, restrictToIp } = require('../middleware/auth');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -141,7 +141,7 @@ router.get('/me', protect, async (req, res) => {
 // @route   PUT /api/auth/update-password
 // @desc    Update user password
 // @access  Private
-router.put('/update-password', protect, async (req, res) => {
+router.put('/update-password', protect, restrictToIp, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 

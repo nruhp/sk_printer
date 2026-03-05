@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CaseStudy = require('../models/CaseStudy');
-const { protect, restrictTo } = require('../middleware/auth');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // @route   GET /api/case-studies
@@ -10,7 +10,7 @@ const upload = require('../middleware/upload');
 router.get('/', async (req, res) => {
   try {
     const { featured, published = 'true', tag } = req.query;
-    
+
     let query = {};
     if (featured) query.isFeatured = featured === 'true';
     if (published) query.isPublished = published === 'true';
@@ -39,9 +39,9 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:slug', async (req, res) => {
   try {
-    const caseStudy = await CaseStudy.findOne({ 
+    const caseStudy = await CaseStudy.findOne({
       slug: req.params.slug,
-      isPublished: true 
+      isPublished: true
     })
       .populate('productUsed', 'name slug category features')
       .populate('testimonial');
@@ -68,17 +68,17 @@ router.get('/:slug', async (req, res) => {
 // @route   POST /api/case-studies
 // @desc    Create case study
 // @access  Private/Admin
-router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async (req, res) => {
+router.post('/', protect, restrictTo('admin'), restrictToIp, upload.array('images', 5), async (req, res) => {
   try {
     const caseStudyData = req.body;
-    
+
     if (req.files && req.files.length > 0) {
       caseStudyData.images = req.files.map((file, index) => ({
         url: `/uploads/${file.filename}`,
         alt: caseStudyData.title,
         caption: '',
       }));
-      
+
       caseStudyData.featuredImage = {
         url: caseStudyData.images[0].url,
         alt: caseStudyData.title,
@@ -102,7 +102,7 @@ router.post('/', protect, restrictTo('admin'), upload.array('images', 5), async 
 // @route   PUT /api/case-studies/:id
 // @desc    Update case study
 // @access  Private/Admin
-router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.put('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const caseStudy = await CaseStudy.findByIdAndUpdate(
       req.params.id,
@@ -132,7 +132,7 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
 // @route   DELETE /api/case-studies/:id
 // @desc    Delete case study
 // @access  Private/Admin
-router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.delete('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const caseStudy = await CaseStudy.findByIdAndDelete(req.params.id);
 

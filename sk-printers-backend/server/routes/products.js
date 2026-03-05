@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
-const { protect, restrictTo } = require('../middleware/auth');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 
 // @route   GET /api/products
 // @desc    Get all products
@@ -47,7 +47,7 @@ router.get('/:slug', async (req, res) => {
 // @desc    Create new product
 // @access  Private/Admin
 // NOTE: No multer middleware — admin form sends JSON, not multipart/form-data
-router.post('/', protect, restrictTo('admin'), async (req, res) => {
+router.post('/', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const body = req.body;
 
@@ -77,7 +77,7 @@ router.post('/', protect, restrictTo('admin'), async (req, res) => {
 // @route   PUT /api/products/:id
 // @desc    Update product
 // @access  Private/Admin
-router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.put('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const body = req.body;
     const updateData = { ...body };
@@ -119,7 +119,7 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
 // @route   DELETE /api/products/:id
 // @desc    Delete product
 // @access  Private/Admin
-router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.delete('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
 

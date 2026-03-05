@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Testimonial = require('../models/Testimonial');
-const { protect, restrictTo } = require('../middleware/auth');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // @route   GET /api/testimonials
@@ -10,7 +10,7 @@ const upload = require('../middleware/upload');
 router.get('/', async (req, res) => {
   try {
     const { featured, active = 'true' } = req.query;
-    
+
     let query = {};
     if (featured) query.isFeatured = featured === 'true';
     if (active) query.isActive = active === 'true';
@@ -33,10 +33,10 @@ router.get('/', async (req, res) => {
 // @route   POST /api/testimonials
 // @desc    Create testimonial
 // @access  Private/Admin
-router.post('/', protect, restrictTo('admin'), upload.single('image'), async (req, res) => {
+router.post('/', protect, restrictTo('admin'), restrictToIp, upload.single('image'), async (req, res) => {
   try {
     const testimonialData = req.body;
-    
+
     if (req.file) {
       testimonialData.image = {
         url: `/uploads/${req.file.filename}`,
@@ -61,7 +61,7 @@ router.post('/', protect, restrictTo('admin'), upload.single('image'), async (re
 // @route   PUT /api/testimonials/:id
 // @desc    Update testimonial
 // @access  Private/Admin
-router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.put('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const testimonial = await Testimonial.findByIdAndUpdate(
       req.params.id,
@@ -91,7 +91,7 @@ router.put('/:id', protect, restrictTo('admin'), async (req, res) => {
 // @route   DELETE /api/testimonials/:id
 // @desc    Delete testimonial
 // @access  Private/Admin
-router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
+router.delete('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
 

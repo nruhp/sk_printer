@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, restrictTo } = require('../middleware/auth');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 const Product = require('../models/Product');
 const Blog = require('../models/Blog');
 const Quote = require('../models/Quote');
@@ -11,7 +11,7 @@ const CaseStudy = require('../models/CaseStudy');
 // @route   GET /api/admin/dashboard/stats
 // @desc    Get dashboard statistics
 // @access  Private/Admin
-router.get('/dashboard/stats', protect, restrictTo('admin'), async (req, res) => {
+router.get('/dashboard/stats', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const stats = await Promise.all([
       Product.countDocuments({ isActive: true }),
@@ -69,7 +69,7 @@ router.get('/dashboard/stats', protect, restrictTo('admin'), async (req, res) =>
 // @route   GET /api/admin/dashboard/analytics
 // @desc    Get analytics data
 // @access  Private/Admin
-router.get('/dashboard/analytics', protect, restrictTo('admin'), async (req, res) => {
+router.get('/dashboard/analytics', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const { period = '30' } = req.query; // days
     const startDate = new Date();

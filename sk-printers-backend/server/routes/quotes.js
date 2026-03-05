@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Quote = require('../models/Quote');
+const { protect, restrictTo, restrictToIp } = require('../middleware/auth');
 const { sendQuoteEmail } = require('../services/emailService');
 
 // POST /api/quotes - Submit quote request
@@ -109,7 +110,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/quotes - Get all quotes (admin only)
-router.get('/', async (req, res) => {
+router.get('/', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const quotes = await Quote.find().sort({ createdAt: -1 });
 
@@ -137,7 +138,7 @@ router.get('/', async (req, res) => {
 });
 
 // PUT /api/quotes/:id - Update quote status
-router.put('/:id', async (req, res) => {
+router.put('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     const quote = await Quote.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ success: true, data: quote });
@@ -147,7 +148,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/quotes/:id - Delete quote
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, restrictTo('admin'), restrictToIp, async (req, res) => {
   try {
     await Quote.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Quote deleted successfully' });
