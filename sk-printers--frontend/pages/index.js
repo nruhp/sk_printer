@@ -75,7 +75,7 @@ export default function Home() {
       title: '7-Ply Corrugated Boxes',
       description: 'Heavy-duty boxes for industrial and export shipping',
       features: ['Burst strength: 250-300', 'Weight capacity: 20-30kg', 'Maximum protection'],
-      image: '/images/7ply-box.png'
+      image: 'https://cpimg.tistatic.com/10305116/b/4/7-Ply-Corrugated-Boxes..jpg'
     },
   ];
 

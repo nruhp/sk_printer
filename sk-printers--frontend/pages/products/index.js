@@ -85,7 +85,7 @@ export default function ProductsPage() {
       name: '7-Ply Corrugated Boxes',
       category: '7-ply',
       description: 'Heavy-duty boxes for industrial and export shipping',
-      image: '/images/7ply-box.jpg',
+      image: 'https://cpimg.tistatic.com/10305116/b/4/7-Ply-Corrugated-Boxes..jpg',
       specifications: {
         burstStrength: '250-300 kPa',
         edgeCrush: '7.5 kN/m',
