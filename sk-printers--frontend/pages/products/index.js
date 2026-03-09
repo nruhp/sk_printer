@@ -52,7 +52,7 @@ export default function ProductsPage() {
       name: '5-Ply Corrugated Boxes',
       category: '5-ply',
       description: 'Ideal for medium-weight products and retail packaging',
-      image: '/images/5ply-box.jpg',
+      image: 'https://s.alicdn.com/@sc04/kf/Ha53a318872bb4a24bea725df74e360bbt.png_300x300.jpg',
       specifications: {
         burstStrength: '200-250 kPa',
         edgeCrush: '5.5 kN/m',

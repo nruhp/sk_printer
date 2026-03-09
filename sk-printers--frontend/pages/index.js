@@ -68,7 +68,7 @@ export default function Home() {
       title: '5-Ply Corrugated Boxes',
       description: 'Ideal for medium-weight products and retail packaging',
       features: ['Burst strength: 200-250', 'Weight capacity: 10-20kg', 'Versatile use'],
-      image: '/images/5ply-box.png'
+      image: 'https://s.alicdn.com/@sc04/kf/Ha53a318872bb4a24bea725df74e360bbt.png_300x300.jpg'
     },
     {
       _id: 'static-3',
