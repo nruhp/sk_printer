@@ -147,7 +147,7 @@ export default function Layout({ children }) {
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <FaMapMarkerAlt className="mt-1 mr-2 text-primary-400" />
-                  <span>C-125, Phase-2, Near Metro Station, Noida, Uttar Pradesh, India</span>
+                  <span>Near Driver Dhaba, Village Hazratpur, Khurja, Uttar Pradesh, India - 203131</span>
                 </li>
                 <li className="flex items-center">
                   <FaPhone className="mr-2 text-primary-400" />
