@@ -203,15 +203,16 @@ export default function ProductsPage() {
       </Head>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
-        <div className="container-custom text-center">
+      <section className="relative bg-gradient-to-r from-primary-700 to-primary-900 text-white py-24 overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.svg')]"></div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-5xl font-black mb-4">Our Products</h1>
-            <p className="text-xl max-w-2xl mx-auto">
-              Premium quality corrugated boxes for all your packaging needs
+            <h1 className="text-5xl md:text-6xl font-black mb-6">Premium Packaging <span className="text-yellow-400">Solutions</span></h1>
+            <p className="text-xl max-w-2xl mx-auto text-gray-200">
+              High-durability 3-ply, 5-ply, and 7-ply corrugated boxes manufactured for industry leaders.
             </p>
           </motion.div>
         </div>
@@ -250,18 +251,18 @@ export default function ProductsPage() {
                 className="card hover:shadow-2xl transition-shadow"
               >
                 {/* Product Image */}
-                <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                <div className="h-64 bg-white border border-gray-100 p-4 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
                   {product.images && product.images.length > 0 ? (
                     <img
                       src={product.images.find(img => img.isPrimary)?.url || product.images[0].url}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : product.image ? (
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <FaBox size={80} className="text-gray-400" />

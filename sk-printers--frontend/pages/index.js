@@ -217,9 +217,9 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="card group hover:scale-105 transition-transform"
               >
-                <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                <div className="h-48 bg-white rounded-lg mb-4 flex items-center justify-center overflow-hidden border border-gray-100 p-2">
                   {product.image ? (
-                    <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                    <img src={product.image} alt={product.title} className="w-full h-full object-contain" />
                   ) : (
                     <FaBox size={64} className="text-gray-400" />
                   )}
