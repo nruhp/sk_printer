@@ -61,21 +61,21 @@ export default function Home() {
       title: '3-Ply Corrugated Boxes',
       description: 'Perfect for lightweight items and e-commerce shipping',
       features: ['Burst strength: 180-200', 'Weight capacity: 5-10kg', 'Cost-effective'],
-      image: '/images/3ply-box.jpg'
+      image: '/images/3ply-box.png'
     },
     {
       _id: 'static-2',
       title: '5-Ply Corrugated Boxes',
       description: 'Ideal for medium-weight products and retail packaging',
       features: ['Burst strength: 200-250', 'Weight capacity: 10-20kg', 'Versatile use'],
-      image: '/images/5ply-box.jpg'
+      image: '/images/5ply-box.png'
     },
     {
       _id: 'static-3',
       title: '7-Ply Corrugated Boxes',
       description: 'Heavy-duty boxes for industrial and export shipping',
       features: ['Burst strength: 250-300', 'Weight capacity: 20-30kg', 'Maximum protection'],
-      image: '/images/7ply-box.jpg'
+      image: '/images/7ply-box.png'
     },
   ];
 
@@ -92,21 +92,18 @@ export default function Home() {
   const testimonials = [
     {
       name: 'Rajesh Kumar',
-      company: 'E-Commerce Solutions Ltd',
       text: 'SK Printers has been our packaging partner for 3 years. Their quality is unmatched and delivery is always on time.',
       rating: 5,
       image: '/images/testimonial-1.jpg'
     },
     {
       name: 'Priya Sharma',
-      company: 'Fashion E-commerce Brand',
       text: 'The custom printed boxes helped elevate our brand image. Highly professional service!',
       rating: 5,
       image: '/images/testimonial-2.jpg'
     },
     {
       name: 'Amit Patel',
-      company: 'Electronics Distributor',
       text: 'Excellent packaging quality for our sensitive electronics. Zero damage rate!',
       rating: 5,
       image: '/images/testimonial-3.jpg'
