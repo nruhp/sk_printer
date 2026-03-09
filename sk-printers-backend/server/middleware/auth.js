@@ -64,10 +64,12 @@ exports.restrictToIp = (req, res, next) => {
   const allowedIp = process.env.ALLOWED_ADMIN_IP;
 
   if (!allowedIp || allowedIp === 'your-laptop-ip-here') {
-    // If not configured, allow access (or could block if preferred)
-    // For safety, let's just log a warning but allow for now to prevent lockout
-    console.warn('⚠️ ALLOWED_ADMIN_IP not configured in environment variables');
-    return next();
+    // BLOCK by default if not configured to ensure security
+    console.error('❌ SECURITY ALERT: ALLOWED_ADMIN_IP not configured! Blocking all admin access.');
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: Admin IP whitelisting is not configured. Please set ALLOWED_ADMIN_IP in environment variables.',
+    });
   }
 
   // Get client IP

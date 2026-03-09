@@ -11,6 +11,19 @@ const generateToken = (id) => {
   });
 };
 
+// @route   GET /api/auth/my-ip
+// @desc    Discover client public IP address (for whitelisting setup)
+// @access  Public
+router.get('/my-ip', (req, res) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const actualIp = clientIp.includes(',') ? clientIp.split(',')[0].trim() : clientIp;
+  res.json({
+    success: true,
+    ip: actualIp,
+    message: 'Copy this IP address to your ALLOWED_ADMIN_IP environment variable.'
+  });
+});
+
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
