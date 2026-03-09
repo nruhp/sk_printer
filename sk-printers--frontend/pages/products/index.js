@@ -118,7 +118,7 @@ export default function ProductsPage() {
       name: 'Custom Printed Boxes',
       category: 'custom',
       description: 'Fully customizable boxes with your brand design',
-      image: '/images/custom-box.jpg',
+      image: '/images/custom-box.png',
       specifications: {
         burstStrength: 'As per requirement',
         edgeCrush: 'Customizable',
