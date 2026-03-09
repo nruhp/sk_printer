@@ -19,7 +19,7 @@ export default function ProductsPage() {
       name: '3-Ply Corrugated Boxes',
       category: '3-ply',
       description: 'Perfect for lightweight items and e-commerce shipping',
-      image: '/images/3ply-box.jpg',
+      image: 'https://5.imimg.com/data5/RJ/GE/SN/SELLER-4242401/3-ply-corrugated-boxes.jpg',
       specifications: {
         burstStrength: '180-200 kPa',
         edgeCrush: '3.5 kN/m',

@@ -61,7 +61,7 @@ export default function Home() {
       title: '3-Ply Corrugated Boxes',
       description: 'Perfect for lightweight items and e-commerce shipping',
       features: ['Burst strength: 180-200', 'Weight capacity: 5-10kg', 'Cost-effective'],
-      image: '/images/3ply-box.png'
+      image: 'https://5.imimg.com/data5/RJ/GE/SN/SELLER-4242401/3-ply-corrugated-boxes.jpg'
     },
     {
       _id: 'static-2',
